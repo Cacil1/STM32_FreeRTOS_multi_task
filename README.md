@@ -1,0 +1,2 @@
+# STM32_FreeRTOS_multi_task
+基于STM32F103开发板，使用FreeRTOS和HAL库开发，包含多个任务和外设使用
