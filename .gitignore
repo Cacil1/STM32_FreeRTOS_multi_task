@@ -1,0 +1,11 @@
+MDK-ARM/myFreeRTOS_test/
+*.o
+*.d
+*.crf
+*.axf
+*.htm
+*.lnp
+*.dep
+*.iex
+*.bak
+JLinkLog.txt

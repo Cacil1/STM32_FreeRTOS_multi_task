@@ -1349,6 +1349,16 @@
               <FileType>5</FileType>
               <FilePath>..\User\TASK\led_board.h</FilePath>
             </File>
+            <File>
+              <FileName>key_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\TASK\key_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>key_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\TASK\key_task.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "system_init.h"
 #include "led_board.h"
+#include "key_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,6 +53,13 @@ const osThreadAttr_t ledBoardTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+
+osThreadId_t keyScanTaskHandle;
+const osThreadAttr_t keyScanTask_attributes = {
+  .name = "keyScanTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE END Variables */
 /* Definitions for initTask */
 osThreadId_t initTaskHandle;
@@ -64,6 +72,7 @@ const osThreadAttr_t initTask_attributes = {
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 void StartLedBoardTask(void *argument);
+void StartKeyScanTask(void *argument);
 /* USER CODE END FunctionPrototypes */
 
 void StartInitTask(void *argument);
@@ -102,6 +111,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   ledBoardTaskHandle = osThreadNew(StartLedBoardTask, NULL, &ledBoardTask_attributes);
+  keyScanTaskHandle = osThreadNew(StartKeyScanTask, NULL, &keyScanTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -130,6 +140,11 @@ void StartInitTask(void *argument)
 void StartLedBoardTask(void *argument)
 {
 	LED_Board_Task_Entry(argument);
+}
+
+void StartKeyScanTask(void *argument)
+{
+	Key_Scan_Task_Entry(argument);
 }
 /* USER CODE END Application */
 

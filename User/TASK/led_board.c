@@ -1,4 +1,4 @@
-#include "system_init.h"
+#include "led_board.h"
 #include "usart.h"
 
 void LED_Board_Task_Entry(void *argument)
@@ -7,9 +7,9 @@ void LED_Board_Task_Entry(void *argument)
 	
 	for(;;)
 	{
-		LOG("LED_BOARD_Task RUNNING!");
+		// LOG("LED_BOARD_Task RUNNING!");
 		
-		// 任务中不要使用HAL_Delay，他会一直占用CPU；osDelay会释放CPU
+		// 锟斤拷锟斤拷锟叫诧拷要使锟斤拷HAL_Delay锟斤拷锟斤拷锟斤拷一直占锟斤拷CPU锟斤拷osDelay锟斤拷锟酵凤拷CPU
 		osDelay(500);
 		HAL_GPIO_TogglePin(GREEN_GPIO_Port, GREEN_Pin);
 	}
