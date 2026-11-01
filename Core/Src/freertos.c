@@ -48,6 +48,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+// 事件标志组，用于init任务初始化成功后，通知其他任务开启
+osEventFlagsId_t SystemReadyFlagsHandle;
+
 osThreadId_t ledBoardTaskHandle;
 const osThreadAttr_t ledBoardTask_attributes = {
   .name = "ledBoardTask",
@@ -125,7 +128,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
+  SystemReadyFlagsHandle = osEventFlagsNew(NULL);
   /* USER CODE END RTOS_EVENTS */
 
 }

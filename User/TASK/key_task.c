@@ -2,6 +2,7 @@
 #include "cmsis_os.h"
 #include "usart.h"
 #include "watchdog_task.h"
+#include "system_init.h"
 
 #define LONG_PRESS_TICKS   pdMS_TO_TICKS(200)
 #define DEBOUNCE_MS        20
@@ -42,6 +43,9 @@ void Key_Scan_Task_Entry(void *argument)
     uint32_t press_start_tick[3] = {0};     // 按下开始的时间戳
 
     (void)argument;
+
+    // 阻塞等待init任务初始化完成
+    System_Init_WaitReady();
 
     for(;;)
     {

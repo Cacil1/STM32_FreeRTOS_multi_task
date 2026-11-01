@@ -1,4 +1,5 @@
 #include "watchdog_task.h"
+#include "system_init.h"
 #include "iwdg.h"
 #include "stdio.h"
 #include "usart.h"
@@ -31,6 +32,9 @@ void Watchdog_Task_Entry(void *argument)
 {
     (void)argument;
 
+    // 阻塞等待init任务初始化完成
+    System_Init_WaitReady();
+    
     for(;;)
     {
         // 看门狗每隔500ms检查一下是否喂狗
