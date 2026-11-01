@@ -1359,6 +1359,16 @@
               <FileType>5</FileType>
               <FilePath>..\User\TASK\key_task.h</FilePath>
             </File>
+            <File>
+              <FileName>watchdog_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\TASK\watchdog_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>watchdog_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\TASK\watchdog_task.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

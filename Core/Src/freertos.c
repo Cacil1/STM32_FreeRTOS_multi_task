@@ -28,6 +28,7 @@
 #include "system_init.h"
 #include "led_board.h"
 #include "key_task.h"
+#include "watchdog_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,6 +61,13 @@ const osThreadAttr_t keyScanTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+
+osThreadId_t watchDogTaskHandle;
+const osThreadAttr_t watchDogTask_attributes = {
+  .name = "watchDogTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE END Variables */
 /* Definitions for initTask */
 osThreadId_t initTaskHandle;
@@ -73,6 +81,7 @@ const osThreadAttr_t initTask_attributes = {
 /* USER CODE BEGIN FunctionPrototypes */
 void StartLedBoardTask(void *argument);
 void StartKeyScanTask(void *argument);
+void StartWatchDogTask(void *argument);
 /* USER CODE END FunctionPrototypes */
 
 void StartInitTask(void *argument);
@@ -112,6 +121,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
   ledBoardTaskHandle = osThreadNew(StartLedBoardTask, NULL, &ledBoardTask_attributes);
   keyScanTaskHandle = osThreadNew(StartKeyScanTask, NULL, &keyScanTask_attributes);
+  watchDogTaskHandle = osThreadNew(StartWatchDogTask, NULL, &watchDogTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -145,6 +155,11 @@ void StartLedBoardTask(void *argument)
 void StartKeyScanTask(void *argument)
 {
 	Key_Scan_Task_Entry(argument);
+}
+
+void StartWatchDogTask(void *argument)
+{
+	Watchdog_Task_Entry(argument);
 }
 /* USER CODE END Application */
 

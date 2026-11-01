@@ -2,31 +2,31 @@
 #include "usart.h"
 
 /**
- * @brief   ¶ÁÈ¡ MPU6050 µÄ WHO_AM_I ¼Ä´æÆ÷£¬ÑéÖ¤ÄÜÕæÕý¶ÁÊý¾Ý£¨²»Ö»ÊÇÓ¦´ð£©
- * @return  ·µ»Ø ID£¨Õý³£Ó¦Îª 0x68£©£¬¶ÁÊ§°Ü·µ»Ø 0xFF
+ * @brief   ï¿½ï¿½È¡ MPU6050 ï¿½ï¿½ WHO_AM_I ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½Ö»ï¿½ï¿½Ó¦ï¿½ï¿½
+ * @return  ï¿½ï¿½ï¿½ï¿½ IDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦Îª 0x68ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü·ï¿½ï¿½ï¿½ 0xFF
  */
 uint8_t mpu_read_who_am_i(void)
 {
     uint8_t id = 0xFF;
 
     iic_start();
-    iic_send_byte(0x68 << 1);       /* 0xD0: MPU6050 Ð´µØÖ· */
+    iic_send_byte(0x68 << 1);       /* 0xD0: MPU6050 Ð´ï¿½ï¿½Ö· */
     if (iic_wait_ack()) goto fail;
 
-    iic_send_byte(0x75);            /* WHO_AM_I ¼Ä´æÆ÷µØÖ· */
+    iic_send_byte(0x75);            /* WHO_AM_I ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ö· */
     if (iic_wait_ack()) goto fail;
 
-    iic_start();                    /* ÖØ¸´ÆðÊ¼£¬ÇÐ»»Îª¶Á */
-    iic_send_byte((0x68 << 1) | 1); /* 0xD1: MPU6050 ¶ÁµØÖ· */
+    iic_start();                    /* ï¿½Ø¸ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ð»ï¿½Îªï¿½ï¿½ */
+    iic_send_byte((0x68 << 1) | 1); /* 0xD1: MPU6050 ï¿½ï¿½ï¿½ï¿½Ö· */
     if (iic_wait_ack()) goto fail;
 
-    id = iic_read_byte(0);          /* ¶Á1×Ö½Ú£¬NAK ½áÊø */
+    id = iic_read_byte(0);          /* ï¿½ï¿½1ï¿½Ö½Ú£ï¿½NAK ï¿½ï¿½ï¿½ï¿½ */
     iic_stop();
-    LOG("MPU6050 WHO_AM_I = 0x%02X %s\r\n", id, (id == 0x68) ? "(OK)" : "(Unexpected!)");
+    LOG("MPU6050 WHO_AM_I = 0x%02X %s", id, (id == 0x68) ? "(OK)" : "(Unexpected!)");
     return id;
 
 fail:
     iic_stop();
-    LOG("MPU6050 read failed (no ACK at 0xD0).\r\n");
+    LOG("MPU6050 read failed (no ACK at 0xD0).");
     return 0xFF;
 }

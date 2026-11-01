@@ -1,6 +1,7 @@
 #include "key_task.h"
 #include "cmsis_os.h"
 #include "usart.h"
+#include "watchdog_task.h"
 
 #define LONG_PRESS_TICKS   pdMS_TO_TICKS(200)
 #define DEBOUNCE_MS        20
@@ -44,6 +45,9 @@ void Key_Scan_Task_Entry(void *argument)
 
     for(;;)
     {
+        // 看门狗喂狗
+        Watchdog_Checkin(WDG_TASK_KEY);
+
         for(int i = 0; i < 3; i++)
         {
             uint8_t cur = Read_Key_Pin(i);
