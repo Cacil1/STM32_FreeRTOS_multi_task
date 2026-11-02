@@ -1,5 +1,7 @@
 #include "system_init.h"
 #include "usart.h"
+#include "iic.h"
+#include "oled.h"
 #include "watchdog_task.h"
 
 void System_Init_WaitReady(void)
@@ -16,6 +18,10 @@ void System_Init_ReleaseTasks(void)
 void Init_Task_Entry(void *argument)
 {
     (void)argument;
+
+    iic_init();
+
+    OLED_Init();
 
 	for(;;)
 	{

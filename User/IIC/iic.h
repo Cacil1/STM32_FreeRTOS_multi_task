@@ -1,31 +1,41 @@
 #ifndef __IIC_H__
 #define __IIC_H__
 
-#include "stm32f1xx_hal.h"   /* HAL ÀàÐÍÓëº¯Êý */
+#include "stm32f1xx_hal.h" /* HAL ï¿½ï¿½ï¿½ï¿½ï¿½ëº¯ï¿½ï¿½ */
 #include "main.h"
 
-#define IIC_SCL_GPIO_PORT               GPIOD
-#define IIC_SCL_GPIO_PIN                GPIO_PIN_3
-#define IIC_SCL_GPIO_CLK_ENABLE()       do{ __HAL_RCC_GPIOD_CLK_ENABLE(); }while(0)
+#define IIC_SCL_GPIO_PORT GPIOD
+#define IIC_SCL_GPIO_PIN GPIO_PIN_3
+#define IIC_SCL_GPIO_CLK_ENABLE()     \
+    do                                \
+    {                                 \
+        __HAL_RCC_GPIOD_CLK_ENABLE(); \
+    } while (0)
 
-#define IIC_SDA_GPIO_PORT               GPIOG
-#define IIC_SDA_GPIO_PIN                GPIO_PIN_13
-#define IIC_SDA_GPIO_CLK_ENABLE()       do{ __HAL_RCC_GPIOG_CLK_ENABLE(); }while(0)
+#define IIC_SDA_GPIO_PORT GPIOG
+#define IIC_SDA_GPIO_PIN GPIO_PIN_13
+#define IIC_SDA_GPIO_CLK_ENABLE()     \
+    do                                \
+    {                                 \
+        __HAL_RCC_GPIOG_CLK_ENABLE(); \
+    } while (0)
 
 /******************************************************************************************/
 
-/* IO²Ù×÷ */
-#define IIC_SCL(x)        do{ x ? \
-                              HAL_GPIO_WritePin(IIC_SCL_GPIO_PORT, IIC_SCL_GPIO_PIN, GPIO_PIN_SET) : \
-                              HAL_GPIO_WritePin(IIC_SCL_GPIO_PORT, IIC_SCL_GPIO_PIN, GPIO_PIN_RESET); \
-                          }while(0)       /* SCL */
+/* IOï¿½ï¿½ï¿½ï¿½ */
+#define IIC_SCL(x)                                                                                                                                         \
+    do                                                                                                                                                     \
+    {                                                                                                                                                      \
+        x ? HAL_GPIO_WritePin(IIC_SCL_GPIO_PORT, IIC_SCL_GPIO_PIN, GPIO_PIN_SET) : HAL_GPIO_WritePin(IIC_SCL_GPIO_PORT, IIC_SCL_GPIO_PIN, GPIO_PIN_RESET); \
+    } while (0) /* SCL */
 
-#define IIC_SDA(x)        do{ x ? \
-                              HAL_GPIO_WritePin(IIC_SDA_GPIO_PORT, IIC_SDA_GPIO_PIN, GPIO_PIN_SET) : \
-                              HAL_GPIO_WritePin(IIC_SDA_GPIO_PORT, IIC_SDA_GPIO_PIN, GPIO_PIN_RESET); \
-                          }while(0)       /* SDA */
+#define IIC_SDA(x)                                                                                                                                         \
+    do                                                                                                                                                     \
+    {                                                                                                                                                      \
+        x ? HAL_GPIO_WritePin(IIC_SDA_GPIO_PORT, IIC_SDA_GPIO_PIN, GPIO_PIN_SET) : HAL_GPIO_WritePin(IIC_SDA_GPIO_PORT, IIC_SDA_GPIO_PIN, GPIO_PIN_RESET); \
+    } while (0) /* SDA */
 
-#define IIC_READ_SDA     HAL_GPIO_ReadPin(IIC_SDA_GPIO_PORT, IIC_SDA_GPIO_PIN) /* ¶ÁÈ¡SDA */
+#define IIC_READ_SDA HAL_GPIO_ReadPin(IIC_SDA_GPIO_PORT, IIC_SDA_GPIO_PIN) /* ï¿½ï¿½È¡SDA */
 
 #define IIC_Init iic_init
 #define iic_start IIC_Start
@@ -34,18 +44,17 @@
 #define iic_send_byte IIC_Send_Byte
 #define iic_read_byte IIC_Read_Byte
 
-/* IICËùÓÐ²Ù×÷º¯Êý */
-void iic_init(void);            /* ³õÊ¼»¯IICµÄIO¿Ú */
-void iic_start(void);           /* ·¢ËÍIIC¿ªÊ¼ÐÅºÅ */
-void iic_stop(void);            /* ·¢ËÍIICÍ£Ö¹ÐÅºÅ */
-void iic_ack(void);             /* IIC·¢ËÍACKÐÅºÅ */
-void iic_nack(void);            /* IIC²»·¢ËÍACKÐÅºÅ */
-uint8_t iic_wait_ack(void);     /* IICµÈ´ýACKÐÅºÅ */
-void iic_send_byte(uint8_t txd);/* IIC·¢ËÍÒ»¸ö×Ö½Ú */
-uint8_t iic_read_byte(unsigned char ack);/* IIC¶ÁÈ¡Ò»¸ö×Ö½Ú */
+/* IICï¿½ï¿½ï¿½Ð²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+void iic_init(void);                      /* ï¿½ï¿½Ê¼ï¿½ï¿½IICï¿½ï¿½IOï¿½ï¿½ */
+void iic_start(void);                     /* ï¿½ï¿½ï¿½ï¿½IICï¿½ï¿½Ê¼ï¿½Åºï¿½ */
+void iic_stop(void);                      /* ï¿½ï¿½ï¿½ï¿½IICÍ£Ö¹ï¿½Åºï¿½ */
+void iic_ack(void);                       /* IICï¿½ï¿½ï¿½ï¿½ACKï¿½Åºï¿½ */
+void iic_nack(void);                      /* IICï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ACKï¿½Åºï¿½ */
+uint8_t iic_wait_ack(void);               /* IICï¿½È´ï¿½ACKï¿½Åºï¿½ */
+void iic_send_byte(uint8_t txd);          /* IICï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö½ï¿½ */
+uint8_t iic_read_byte(unsigned char ack); /* IICï¿½ï¿½È¡Ò»ï¿½ï¿½ï¿½Ö½ï¿½ */
 
-
-/* Éè±¸²Ù×÷º¯Êý */
+/* ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 uint8_t mpu_read_who_am_i(void);
 void iic_bus_scan(void);
 #endif

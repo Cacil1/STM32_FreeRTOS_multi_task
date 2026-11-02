@@ -1,0 +1,39 @@
+#ifndef __OLED_H
+#define __OLED_H
+
+#include "stdlib.h"
+#include "stm32f1xx_hal.h"
+
+#define OLED_CS(x) HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, \
+                                     (x) ? GPIO_PIN_SET : GPIO_PIN_RESET)
+#define OLED_DC(x) HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, \
+                                     (x) ? GPIO_PIN_SET : GPIO_PIN_RESET)
+#define OLED_RST(x) HAL_GPIO_WritePin(OLED_RST_GPIO_Port, OLED_RST_Pin, \
+                                      (x) ? GPIO_PIN_SET : GPIO_PIN_RESET)
+
+#define OLED_CMD 0              // 写命令
+#define OLED_DATA 1             // 写数据
+#define OLED_LINE_CHARS_12PT 21 // 12号字体在128px宽屏幕上一行最多可显示的字符数(128/6)
+
+void OLED_ColorTurn(uint8_t i);
+void OLED_DisplayTurn(uint8_t i);
+void OLED_WR_Byte(uint8_t dat, uint8_t mode);
+void OLED_DisPlay_On(void);
+void OLED_DisPlay_Off(void);
+void OLED_Refresh(void);
+void OLED_Clear(void);
+void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t t);
+void OLED_DrawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t mode);
+void OLED_DrawCircle(uint8_t x, uint8_t y, uint8_t r);
+void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t size1, uint8_t mode);
+void OLED_ShowString(uint8_t x, uint8_t y, uint8_t *chr, uint8_t size1, uint8_t mode);
+void OLED_ShowNum(uint8_t x, uint8_t y, uint32_t num, uint8_t len, uint8_t size1, uint8_t mode);
+void OLED_ShowChinese(uint8_t x, uint8_t y, uint8_t num, uint8_t size1, uint8_t mode);
+void OLED_ScrollDisplay(uint8_t num, uint8_t space, uint8_t mode);
+void OLED_ShowPicture(uint8_t x, uint8_t y, uint8_t sizex, uint8_t sizey, uint8_t BMP[], uint8_t mode);
+void OLED_Init(void);
+void OLED_ShowFloatNum(uint8_t x, uint8_t y, float num, uint8_t z_len, uint8_t f_len, uint8_t size1, uint8_t mode);
+void OLED_FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t mode);
+void OLED_ShowStringWrapped(uint8_t x, uint8_t y, uint8_t *chr, uint8_t size1, uint8_t mode, uint8_t max_lines);
+
+#endif
