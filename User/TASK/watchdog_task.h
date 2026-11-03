@@ -8,6 +8,7 @@ typedef enum
     WDG_TASK_KEY = 0,
     WDG_TASK_LED_BOARD,
     WDG_TASK_OLED,
+    WDG_TASK_MPU,
     WDG_TASK_COUNT
 } WatchdogTaskId_t;
 

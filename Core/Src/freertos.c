@@ -30,6 +30,7 @@
 #include "key_task.h"
 #include "watchdog_task.h"
 #include "oled_task.h"
+#include "mpu_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -79,6 +80,13 @@ const osThreadAttr_t oledTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+
+osThreadId_t mpuTaskHandle;
+const osThreadAttr_t mpuTask_attributes = {
+  .name = "mpuTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE END Variables */
 /* Definitions for initTask */
 osThreadId_t initTaskHandle;
@@ -94,6 +102,7 @@ void StartLedBoardTask(void *argument);
 void StartKeyScanTask(void *argument);
 void StartWatchDogTask(void *argument);
 void StartOLEDTask(void *argument);
+void StartMPUTask(void *argument);
 /* USER CODE END FunctionPrototypes */
 
 void StartInitTask(void *argument);
@@ -135,6 +144,7 @@ void MX_FREERTOS_Init(void) {
   keyScanTaskHandle = osThreadNew(StartKeyScanTask, NULL, &keyScanTask_attributes);
   watchDogTaskHandle = osThreadNew(StartWatchDogTask, NULL, &watchDogTask_attributes);
   oledTaskHandle = osThreadNew(StartOLEDTask, NULL, &oledTask_attributes);
+  mpuTaskHandle = osThreadNew(StartMPUTask, NULL, &mpuTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -178,6 +188,11 @@ void StartWatchDogTask(void *argument)
 void StartOLEDTask(void *argument)
 {
 	OLED_Task_Entry(argument);
+}
+
+void StartMPUTask(void *argument)
+{
+  MPU_Task_Entry(argument);
 }
 /* USER CODE END Application */
 

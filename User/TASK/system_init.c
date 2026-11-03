@@ -2,6 +2,8 @@
 #include "usart.h"
 #include "iic.h"
 #include "oled.h"
+#include "inv_mpu.h"
+#include "soft_spi.h"
 #include "watchdog_task.h"
 
 void System_Init_WaitReady(void)
@@ -21,7 +23,12 @@ void Init_Task_Entry(void *argument)
 
     iic_init();
 
+	soft_spi_init();
+
     OLED_Init();
+
+	uint8_t res = mpu_dmp_init();
+LOG("mpu_dmp_init result = %u", res);
 
 	for(;;)
 	{

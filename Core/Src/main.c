@@ -124,7 +124,7 @@ int main(void)
 	  // osKernelStart正常启动后是不会退出的，这里是添加异常代码，红灯闪烁代表任务异常了
     HAL_Delay(500);
     HAL_GPIO_TogglePin(RED_GPIO_Port, RED_Pin);
-    /* USER CODE END 3 */
+  /* USER CODE END 3 */
   }
 }
 

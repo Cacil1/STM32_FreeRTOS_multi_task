@@ -4,16 +4,16 @@
 #include "stm32f1xx_hal.h" /* HAL �����뺯�� */
 #include "main.h"
 
-#define IIC_SCL_GPIO_PORT GPIOD
-#define IIC_SCL_GPIO_PIN GPIO_PIN_3
+#define IIC_SCL_GPIO_PORT GPIOB
+#define IIC_SCL_GPIO_PIN GPIO_PIN_10
 #define IIC_SCL_GPIO_CLK_ENABLE()     \
     do                                \
     {                                 \
         __HAL_RCC_GPIOD_CLK_ENABLE(); \
     } while (0)
 
-#define IIC_SDA_GPIO_PORT GPIOG
-#define IIC_SDA_GPIO_PIN GPIO_PIN_13
+#define IIC_SDA_GPIO_PORT GPIOB
+#define IIC_SDA_GPIO_PIN GPIO_PIN_11
 #define IIC_SDA_GPIO_CLK_ENABLE()     \
     do                                \
     {                                 \
