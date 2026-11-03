@@ -3,8 +3,8 @@
 void soft_spi_init(void)
 {
     /* GPIO配置已由CubeMX生成，这里只设空闲电平 */
-    SOFTSPI_SCLK(0);
-    SOFTSPI_SDIN(0);
+    SOFT_SPI_SCLK(0);
+    SOFT_SPI_SDIN(0);
 }
 
 void soft_spi_write_byte(uint8_t data)

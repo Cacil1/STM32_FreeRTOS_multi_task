@@ -3,6 +3,7 @@
 
 #include "stdlib.h"
 #include "stm32f1xx_hal.h"
+#include "main.h"
 
 #define OLED_CS(x) HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, \
                                      (x) ? GPIO_PIN_SET : GPIO_PIN_RESET)

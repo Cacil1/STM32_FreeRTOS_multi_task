@@ -39,11 +39,11 @@ void OLED_DisplayTurn(uint8_t i)
 // mode:数据/命令标志 0,表示命令;1,表示数据;
 void OLED_WR_Byte(uint8_t dat, uint8_t mode)
 {
-	OLED_RS(cmd); /* RS=0命令, RS=1数据，片选拉低前后都可以 */
+	OLED_RST(mode); /* RS=0命令, RS=1数据，片选拉低前后都可以 */
 	OLED_CS(0);	  /* 选中 */
-	softspi_write_byte(data);
+	soft_spi_write_byte(dat);
 	OLED_CS(1); /* 释放 */
-	OLED_RS(1);
+	OLED_RST(1);
 }
 
 // 开启OLED显示
@@ -65,28 +65,21 @@ void OLED_DisPlay_Off(void)
 // 更新显存到OLED
 void OLED_Refresh(void)
 {
-	uint8_t i, n;
+    uint8_t i, n;
 
-	for (i = 0; i < 8; i++)
-	{
-		// taskENTER_CRITICAL();
-		OLED_WR_Byte(0xb0 + i, OLED_CMD); // 设置行起始地址
-		OLED_WR_Byte(0x00, OLED_CMD);	  // 设置低列起始地址
-		OLED_WR_Byte(0x10, OLED_CMD);	  // 设置高列起始地址
-		iic_start();
-		iic_send_byte(0x78);
-		iic_wait_ack();
-		iic_send_byte(0x40);
-		iic_wait_ack();
-		for (n = 0; n < 128; n++)
-		{
-			iic_send_byte(OLED_GRAM[n][i]);
-			iic_wait_ack();
-		}
-		iic_stop();
-		// taskEXIT_CRITICAL();
-	}
+    for (i = 0; i < 8; i++)
+    {
+        OLED_WR_Byte(0xb0 + i, OLED_CMD);   /* 设置页起始地址 0~7 */
+        OLED_WR_Byte(0x00, OLED_CMD);       /* 列低地址 */
+        OLED_WR_Byte(0x10, OLED_CMD);       /* 列高地址 */
+
+        for (n = 0; n < 128; n++)
+        {
+            OLED_WR_Byte(OLED_GRAM[n][i], OLED_DATA);
+        }
+    }
 }
+
 
 // 清屏函数
 void OLED_Clear(void)

@@ -51,7 +51,7 @@ void Watchdog_Task_Entry(void *argument)
             }
         }
 
-        // if(all_alive)
+        if(all_alive)
         {
             // 喂硬件看门狗
             HAL_IWDG_Refresh(&hiwdg);
