@@ -3,7 +3,6 @@
 #include <string.h>
 #include "oled.h"
 #include "oledfont.h"
-#include "soft_spi.h"
 
 uint8_t OLED_GRAM[144][8];
 
@@ -39,12 +38,16 @@ void OLED_DisplayTurn(uint8_t i)
 // mode:数据/命令标志 0,表示命令;1,表示数据;
 void OLED_WR_Byte(uint8_t dat, uint8_t mode)
 {
-	OLED_RST(mode); /* RS=0命令, RS=1数据，片选拉低前后都可以 */
-	OLED_CS(0);	  /* 选中 */
-	soft_spi_write_byte(dat);
-	OLED_CS(1); /* 释放 */
-	OLED_RST(1);
+    iic_start();
+    iic_send_byte(OLED_I2C_ADDR);            /* 器件地址(写) 0x78 */
+    iic_wait_ack();
+    iic_send_byte(mode ? 0x40 : 0x00);       /* 控制字节 */
+    iic_wait_ack();
+    iic_send_byte(dat);
+    iic_wait_ack();
+    iic_stop();
 }
+
 
 // 开启OLED显示
 void OLED_DisPlay_On(void)
@@ -519,8 +522,35 @@ void OLED_FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t mode)
 // OLED的初始化
 void OLED_Init(void)
 {
-	OLED_RST(0);
-	osDelay(100); /* FreeRTOS下用osDelay，别用delay_ms */
-	OLED_RST(1);
-	osDelay(100);
+    osDelay(200);          /* 上电稳定（I2C模块无独立RST引脚，直接发命令） */
+
+    OLED_WR_Byte(0xAE, OLED_CMD);  /* 关显示 */
+    OLED_WR_Byte(0xD5, OLED_CMD);  /* 时钟分频/振荡频率 */
+    OLED_WR_Byte(0x80, OLED_CMD);
+    OLED_WR_Byte(0xA8, OLED_CMD);  /* 复用率 1/64 */
+    OLED_WR_Byte(0x3F, OLED_CMD);
+    OLED_WR_Byte(0xD3, OLED_CMD);  /* 显示偏移 */
+    OLED_WR_Byte(0x00, OLED_CMD);
+    OLED_WR_Byte(0x40, OLED_CMD);  /* 起始行 0 */
+    OLED_WR_Byte(0x8D, OLED_CMD);  /* 电荷泵使能 */
+    OLED_WR_Byte(0x14, OLED_CMD);
+    OLED_WR_Byte(0x20, OLED_CMD);  /* 内存寻址模式：页模式 */
+    OLED_WR_Byte(0x02, OLED_CMD);
+    OLED_WR_Byte(0xA1, OLED_CMD);  /* 段重映射 */
+    OLED_WR_Byte(0xC8, OLED_CMD);  /* COM扫描方向：从下到上 */
+    OLED_WR_Byte(0xDA, OLED_CMD);  /* COM引脚配置 */
+    OLED_WR_Byte(0x12, OLED_CMD);
+    OLED_WR_Byte(0x81, OLED_CMD);  /* 对比度 */
+    OLED_WR_Byte(0xCF, OLED_CMD);
+    OLED_WR_Byte(0xD9, OLED_CMD);  /* 预充电周期 */
+    OLED_WR_Byte(0xF1, OLED_CMD);
+    OLED_WR_Byte(0xDB, OLED_CMD);  /* VCOMH电压 */
+    OLED_WR_Byte(0x40, OLED_CMD);
+    OLED_WR_Byte(0xA4, OLED_CMD);  /* 显示跟随RAM内容 */
+    OLED_WR_Byte(0xA6, OLED_CMD);  /* 正常显示（非反色） */
+    OLED_WR_Byte(0xAF, OLED_CMD);  /* 开显示 */
+
+    OLED_Clear();
+    OLED_Refresh();
 }
+

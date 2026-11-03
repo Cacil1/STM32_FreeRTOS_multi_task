@@ -6,19 +6,12 @@
 
 #define IIC_SCL_GPIO_PORT GPIOB
 #define IIC_SCL_GPIO_PIN GPIO_PIN_10
-#define IIC_SCL_GPIO_CLK_ENABLE()     \
-    do                                \
-    {                                 \
-        __HAL_RCC_GPIOD_CLK_ENABLE(); \
-    } while (0)
+#define IIC_SCL_GPIO_CLK_ENABLE()  __HAL_RCC_GPIOB_CLK_ENABLE()
 
 #define IIC_SDA_GPIO_PORT GPIOB
 #define IIC_SDA_GPIO_PIN GPIO_PIN_11
-#define IIC_SDA_GPIO_CLK_ENABLE()     \
-    do                                \
-    {                                 \
-        __HAL_RCC_GPIOG_CLK_ENABLE(); \
-    } while (0)
+#define IIC_SDA_GPIO_CLK_ENABLE()  __HAL_RCC_GPIOB_CLK_ENABLE()
+
 
 /******************************************************************************************/
 
