@@ -53,6 +53,13 @@
 // 事件标志组，用于init任务初始化成功后，通知其他任务开启
 osEventFlagsId_t SystemReadyFlagsHandle;
 
+// 按键消息队列
+osMessageQueueId_t KeyQueueHandle;
+const osMessageQueueAttr_t KeyQueue_attributes = {
+  .name = "KeyQueue"
+};
+
+// 板载Led任务
 osThreadId_t ledBoardTaskHandle;
 const osThreadAttr_t ledBoardTask_attributes = {
   .name = "ledBoardTask",
@@ -60,6 +67,7 @@ const osThreadAttr_t ledBoardTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+// 按键扫描任务
 osThreadId_t keyScanTaskHandle;
 const osThreadAttr_t keyScanTask_attributes = {
   .name = "keyScanTask",
@@ -67,6 +75,7 @@ const osThreadAttr_t keyScanTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+// 看门狗任务
 osThreadId_t watchDogTaskHandle;
 const osThreadAttr_t watchDogTask_attributes = {
   .name = "watchDogTask",
@@ -74,6 +83,7 @@ const osThreadAttr_t watchDogTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+// OLED屏幕显示任务
 osThreadId_t oledTaskHandle;
 const osThreadAttr_t oledTask_attributes = {
   .name = "oledTask",
@@ -81,6 +91,7 @@ const osThreadAttr_t oledTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+// MPU任务
 osThreadId_t mpuTaskHandle;
 const osThreadAttr_t mpuTask_attributes = {
   .name = "mpuTask",
@@ -132,7 +143,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+  KeyQueueHandle = osMessageQueueNew (5, sizeof(uint16_t), &KeyQueue_attributes);
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */

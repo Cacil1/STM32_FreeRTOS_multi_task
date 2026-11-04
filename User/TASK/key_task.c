@@ -8,6 +8,8 @@
 #define DEBOUNCE_MS        20
 #define SCAN_PERIOD_MS     10
 
+extern osMessageQueueId_t KeyQueueHandle; 
+
 static uint8_t Read_Key_Pin(uint8_t key_index)
 {
     switch(key_index)
@@ -74,16 +76,22 @@ void Key_Scan_Task_Entry(void *argument)
                 if(Read_Key_Pin(i) == 1) // 二次确认，还是高电平，认为是真松开（这里实际上松手才算长按，有些需求是长按指定时间后就触发）
                 {
                     uint32_t duration = osKernelGetTickCount() - press_start_tick[i];
+                    uint16_t evt;
 
                     // 判断是长按还是短按
                     if(duration >= LONG_PRESS_TICKS)
                     {
+                        evt = (uint16_t)(KEY0_LONG + i * 2);
                         LOG("release %s long",index2KeyName(i));
                     }
                     else
                     {
+                        evt = (uint16_t)(KEY0_SHORT + i * 2);
                         LOG("release %s short",index2KeyName(i));
                     }
+
+                    // 发送消息给OLED任务
+                    osMessageQueuePut(KeyQueueHandle, &evt, 0, 0);
 
                     key_last_state[i] = 1;
                 }
