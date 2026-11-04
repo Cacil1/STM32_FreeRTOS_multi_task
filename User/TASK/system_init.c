@@ -1,6 +1,6 @@
 #include "system_init.h"
 #include "usart.h"
-#include "iic.h"
+#include "soft_iic.h"
 #include "oled.h"
 #include "inv_mpu.h"
 #include "soft_spi.h"
@@ -21,14 +21,11 @@ void Init_Task_Entry(void *argument)
 {
     (void)argument;
 
-    iic_init();
+    SOFT_IIC_Init();
 
 	soft_spi_init();
 
     OLED_Init();
-
-	uint8_t res = mpu_dmp_init();
-LOG("mpu_dmp_init result = %u", res);
 
 	for(;;)
 	{

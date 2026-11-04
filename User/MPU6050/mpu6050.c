@@ -4,7 +4,7 @@
 uint8_t MPU_Init(void)
 { 
     uint8_t res;
-    IIC_Init();                                        // GPIO初始化(开SCL/SDA时钟+配置)
+    SOFT_IIC_Init();                                        // GPIO初始化(开SCL/SDA时钟+配置)
     
     MPU_Write_Byte(MPU_PWR_MGMT1_REG, 0X80);           // 软复位(复位所有寄存器到默认值)
     HAL_Delay(100);                                    // 等芯片内部复位完成(手册要求)
@@ -20,7 +20,7 @@ uint8_t MPU_Init(void)
     MPU_Write_Byte(MPU_INTBP_CFG_REG, 0X80);           // INT引脚低电平有效
     
     res = MPU_Read_Byte(MPU_DEVICE_ID_REG);            // 读WHO AM I验证芯片在线
-    if(res == CHIP_ID_MPU6050 || res == CHIP_ID_DOMESTIC)                               // ID正确 → 芯片确实在总线上
+    if(res == MPU_ADDR)                                // ID正确 → 芯片确实在总线上
     {
         MPU_Write_Byte(MPU_PWR_MGMT1_REG, 0X01);       // 时钟源=PLL(X轴陀螺)
         MPU_Write_Byte(MPU_PWR_MGMT2_REG, 0X00);       // 6轴全部使能
@@ -127,25 +127,25 @@ uint8_t MPU_Get_Accelerometer(short *ax,short *ay,short *az)
 uint8_t MPU_Write_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf)
 {
 	uint8_t i; 
-    IIC_Start(); 
-	IIC_Send_Byte((addr<<1)|0);//����������ַ+д����	
-	if(IIC_Wait_Ack())	//�ȴ�Ӧ��
+    SOFT_IIC_Start(); 
+	SOFT_IIC_Send_Byte((addr<<1)|0);//����������ַ+д����	
+	if(SOFT_IIC_Wait_Ack())	//�ȴ�Ӧ��
 	{
-		IIC_Stop();		 
+		SOFT_IIC_Stop();		 
 		return 1;		
 	}
-    IIC_Send_Byte(reg);	//д�Ĵ�����ַ
-    IIC_Wait_Ack();		//�ȴ�Ӧ��
+    SOFT_IIC_Send_Byte(reg);	//д�Ĵ�����ַ
+    SOFT_IIC_Wait_Ack();		//�ȴ�Ӧ��
 	for(i=0;i<len;i++)
 	{
-		IIC_Send_Byte(buf[i]);	//��������
-		if(IIC_Wait_Ack())		//�ȴ�ACK
+		SOFT_IIC_Send_Byte(buf[i]);	//��������
+		if(SOFT_IIC_Wait_Ack())		//�ȴ�ACK
 		{
-			IIC_Stop();	 
+			SOFT_IIC_Stop();	 
 			return 1;		 
 		}		
 	}    
-    IIC_Stop();	 
+    SOFT_IIC_Stop();	 
 	return 0;	
 } 
 //IIC������
@@ -157,48 +157,48 @@ uint8_t MPU_Write_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf)
 //    ����,�������
 uint8_t MPU_Read_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf)
 { 
- 	IIC_Start(); 
-	IIC_Send_Byte((addr<<1)|0);//����������ַ+д����	
-	if(IIC_Wait_Ack())	//�ȴ�Ӧ��
+ 	SOFT_IIC_Start(); 
+	SOFT_IIC_Send_Byte((addr<<1)|0);//����������ַ+д����	
+	if(SOFT_IIC_Wait_Ack())	//�ȴ�Ӧ��
 	{
-		IIC_Stop();		 
+		SOFT_IIC_Stop();		 
 		return 1;		
 	}
-    IIC_Send_Byte(reg);	//д�Ĵ�����ַ
-    IIC_Wait_Ack();		//�ȴ�Ӧ��
-    IIC_Start();
-	IIC_Send_Byte((addr<<1)|1);//����������ַ+������	
-    IIC_Wait_Ack();		//�ȴ�Ӧ�� 
+    SOFT_IIC_Send_Byte(reg);	//д�Ĵ�����ַ
+    SOFT_IIC_Wait_Ack();		//�ȴ�Ӧ��
+    SOFT_IIC_Start();
+	SOFT_IIC_Send_Byte((addr<<1)|1);//����������ַ+������	
+    SOFT_IIC_Wait_Ack();		//�ȴ�Ӧ�� 
 	while(len)
 	{
-		if(len==1)*buf=IIC_Read_Byte(0);//������,����nACK 
-		else *buf=IIC_Read_Byte(1);		//������,����ACK  
+		if(len==1)*buf=SOFT_IIC_Read_Byte(0);//������,����nACK 
+		else *buf=SOFT_IIC_Read_Byte(1);		//������,����ACK  
 		len--;
 		buf++; 
 	}    
-    IIC_Stop();	//����һ��ֹͣ���� 
+    SOFT_IIC_Stop();	//����һ��ֹͣ���� 
 	return 0;	
 }
 
 // 软件IIC写字节
 uint8_t MPU_Write_Byte(uint8_t reg,uint8_t data) 				 
 { 
-    IIC_Start(); 	//起始信号
-	IIC_Send_Byte((MPU_ADDR<<1)|0);	//器件地址+写位(0)  → 0xD0
-	if(IIC_Wait_Ack())	//等待从机应答
+    SOFT_IIC_Start(); 	//起始信号
+	SOFT_IIC_Send_Byte((MPU_ADDR<<1)|0);	//器件地址+写位(0)  → 0xD0
+	if(SOFT_IIC_Wait_Ack())	//等待从机应答
 	{
-		IIC_Stop();		 
+		SOFT_IIC_Stop();		 
 		return 1;		
 	}
-    IIC_Send_Byte(reg);		//写寄存器地址
-    IIC_Wait_Ack();		//等待应答
-	IIC_Send_Byte(data);//发送数据
-	if(IIC_Wait_Ack())	//等待应答
+    SOFT_IIC_Send_Byte(reg);		//写寄存器地址
+    SOFT_IIC_Wait_Ack();		//等待应答
+	SOFT_IIC_Send_Byte(data);//发送数据
+	if(SOFT_IIC_Wait_Ack())	//等待应答
 	{
-		IIC_Stop();	 	//停止信号
+		SOFT_IIC_Stop();	 	//停止信号
 		return 1;		 
 	}		 
-    IIC_Stop();	 
+    SOFT_IIC_Stop();	 
 	return 0;
 }
 
@@ -206,16 +206,16 @@ uint8_t MPU_Write_Byte(uint8_t reg,uint8_t data)
 uint8_t MPU_Read_Byte(uint8_t reg)
 {
 	uint8_t res;
-    IIC_Start(); 
-	IIC_Send_Byte((MPU_ADDR<<1)|0);
-	IIC_Wait_Ack();		//�ȴ�Ӧ�� 
-    IIC_Send_Byte(reg);	//д�Ĵ�����ַ
-    IIC_Wait_Ack();		//�ȴ�Ӧ��
-    IIC_Start();
-	IIC_Send_Byte((MPU_ADDR<<1)|1);//����������ַ+������	
-    IIC_Wait_Ack();		//�ȴ�Ӧ�� 
-	res=IIC_Read_Byte(0);//��ȡ����,����nACK 
-    IIC_Stop();			//����һ��ֹͣ���� 
+    SOFT_IIC_Start(); 
+	SOFT_IIC_Send_Byte((MPU_ADDR<<1)|0);
+	SOFT_IIC_Wait_Ack();		//�ȴ�Ӧ�� 
+    SOFT_IIC_Send_Byte(reg);	//д�Ĵ�����ַ
+    SOFT_IIC_Wait_Ack();		//�ȴ�Ӧ��
+    SOFT_IIC_Start();
+	SOFT_IIC_Send_Byte((MPU_ADDR<<1)|1);//����������ַ+������	
+    SOFT_IIC_Wait_Ack();		//�ȴ�Ӧ�� 
+	res=SOFT_IIC_Read_Byte(0);//��ȡ����,����nACK 
+    SOFT_IIC_Stop();			//����һ��ֹͣ���� 
 	return res;		
 }
 

@@ -4,7 +4,7 @@
 #include "stdlib.h"
 #include "stm32f1xx_hal.h"
 #include "main.h"
-#include "iic.h"          /* 引入软件IIC接口 */
+#include "soft_iic.h"          /* 引入软件IIC接口 */
 
 #define OLED_I2C_ADDR   0x78   /* SSD1306 I2C地址（SA0接地时为0x78） */
 

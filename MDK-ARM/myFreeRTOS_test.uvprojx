@@ -676,19 +676,19 @@
           <GroupName>IIC</GroupName>
           <Files>
             <File>
-              <FileName>iic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\IIC\iic.c</FilePath>
-            </File>
-            <File>
-              <FileName>iic.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\User\IIC\iic.h</FilePath>
-            </File>
-            <File>
               <FileName>iic_device.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\IIC\iic_device.c</FilePath>
+            </File>
+            <File>
+              <FileName>soft_iic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\IIC\soft_iic.c</FilePath>
+            </File>
+            <File>
+              <FileName>soft_iic.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\IIC\soft_iic.h</FilePath>
             </File>
           </Files>
         </Group>

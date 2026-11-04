@@ -38,14 +38,14 @@ void OLED_DisplayTurn(uint8_t i)
 // mode:数据/命令标志 0,表示命令;1,表示数据;
 void OLED_WR_Byte(uint8_t dat, uint8_t mode)
 {
-    iic_start();
-    iic_send_byte(OLED_I2C_ADDR);            /* 器件地址(写) 0x78 */
-    iic_wait_ack();
-    iic_send_byte(mode ? 0x40 : 0x00);       /* 控制字节 */
-    iic_wait_ack();
-    iic_send_byte(dat);
-    iic_wait_ack();
-    iic_stop();
+    SOFT_IIC_Start();
+    SOFT_IIC_Send_Byte(OLED_I2C_ADDR);            /* 器件地址(写) 0x78 */
+    SOFT_IIC_Wait_Ack();
+    SOFT_IIC_Send_Byte(mode ? 0x40 : 0x00);       /* 控制字节 */
+    SOFT_IIC_Wait_Ack();
+    SOFT_IIC_Send_Byte(dat);
+    SOFT_IIC_Wait_Ack();
+    SOFT_IIC_Stop();
 }
 
 

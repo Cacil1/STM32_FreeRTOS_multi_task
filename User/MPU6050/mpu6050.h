@@ -1,6 +1,6 @@
 #ifndef __MPU6050_H
 #define __MPU6050_H
-#include "iic.h"   												  	  
+#include "soft_iic.h"   												  	  
 //////////////////////////////////////////////////////////////////////////////////	 
 //������ֻ��ѧϰʹ�ã�δ���������ɣ��������������κ���;
 //ALIENTEK STM32F407������
@@ -85,10 +85,8 @@
  
 //���AD0��(9��)�ӵ�,IIC��ַΪ0X68(���������λ).
 //�����V3.3,��IIC��ַΪ0X69(���������λ).
+#define MPU_ADDR				0X68
 
-#define MPU_ADDR  0X68
-#define CHIP_ID_MPU6050    0x68   /* InvenSense老版ID */
-#define CHIP_ID_DOMESTIC   0x70   /* 国产替代版ID */
 
 ////��Ϊ�������GND,����תΪ��д��ַ��,Ϊ0XD1��0XD0(�����GND,��Ϊ0XD3��0XD2)  
 //#define MPU_READ    0XD1
