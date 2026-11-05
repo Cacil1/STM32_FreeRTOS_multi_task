@@ -31,6 +31,7 @@
 #include "watchdog_task.h"
 #include "oled_task.h"
 #include "mpu_task.h"
+#include "flash_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -98,6 +99,14 @@ const osThreadAttr_t mpuTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+
+// FLASH存储任务
+osThreadId_t flashTaskHandle;
+const osThreadAttr_t flashTask_attributes = {
+  .name = "flashTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE END Variables */
 /* Definitions for initTask */
 osThreadId_t initTaskHandle;
@@ -114,6 +123,7 @@ void StartKeyScanTask(void *argument);
 void StartWatchDogTask(void *argument);
 void StartOLEDTask(void *argument);
 void StartMPUTask(void *argument);
+void StartFlashTask(void *argument);
 /* USER CODE END FunctionPrototypes */
 
 void StartInitTask(void *argument);
@@ -156,6 +166,7 @@ void MX_FREERTOS_Init(void) {
   watchDogTaskHandle = osThreadNew(StartWatchDogTask, NULL, &watchDogTask_attributes);
   oledTaskHandle = osThreadNew(StartOLEDTask, NULL, &oledTask_attributes);
   mpuTaskHandle = osThreadNew(StartMPUTask, NULL, &mpuTask_attributes);
+  flashTaskHandle = osThreadNew(StartFlashTask, NULL, &flashTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -204,6 +215,11 @@ void StartOLEDTask(void *argument)
 void StartMPUTask(void *argument)
 {
   MPU_Task_Entry(argument);
+}
+
+void StartFlashTask(void *argument)
+{
+  Flash_Task_Entry(argument);
 }
 /* USER CODE END Application */
 

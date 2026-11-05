@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../User/LED;../User/IIC;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../User/TASK;../User/OLED;../User/SPI;..\User\MPU6050;..\User\MPU6050\eMPL</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../User/LED;../User/IIC;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../User/TASK;../User/OLED;../User/SPI;..\User\MPU6050;..\User\MPU6050\eMPL;..\User\NORFLASH</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1389,6 +1389,16 @@
               <FileType>5</FileType>
               <FilePath>..\User\TASK\mpu_task.h</FilePath>
             </File>
+            <File>
+              <FileName>flash_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\TASK\flash_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>flash_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\TASK\flash_task.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1473,6 +1483,21 @@
               <FileName>inv_mpu_dmp_motion_driver.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\MPU6050\eMPL\inv_mpu_dmp_motion_driver.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>NORFLASH</GroupName>
+          <Files>
+            <File>
+              <FileName>norflash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\NORFLASH\norflash.c</FilePath>
+            </File>
+            <File>
+              <FileName>norflash.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\NORFLASH\norflash.h</FilePath>
             </File>
           </Files>
         </Group>
