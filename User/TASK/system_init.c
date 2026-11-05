@@ -5,6 +5,7 @@
 #include "inv_mpu.h"
 #include "soft_spi.h"
 #include "watchdog_task.h"
+#include "norflash.h"
 
 void System_Init_WaitReady(void)
 {
@@ -26,6 +27,8 @@ void Init_Task_Entry(void *argument)
 	soft_spi_init();
 
     OLED_Init();
+
+	norflash_init();
 
 	for(;;)
 	{

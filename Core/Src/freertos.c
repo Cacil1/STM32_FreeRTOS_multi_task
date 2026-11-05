@@ -60,6 +60,24 @@ const osMessageQueueAttr_t KeyQueue_attributes = {
   .name = "KeyQueue"
 };
 
+// 存储消息队列
+osMessageQueueId_t FlashCmdQueueHandle;
+const osMessageQueueAttr_t FlashCmdQueue_attributes = {
+  .name = "FlashCmdQueue"
+};
+
+// Meta数据操作锁
+osMutexId_t MetaDataMutexHandle;
+const osMutexAttr_t MetaDataMutex_attributes = {
+  .name = "MetaDataMutex"
+};
+
+// SPI操作锁
+osMutexId_t SPIMutexHandle;
+const osMutexAttr_t SPIMutex_attributes = {
+  .name = "SPIMutex"
+};
+
 // 板载Led任务
 osThreadId_t ledBoardTaskHandle;
 const osThreadAttr_t ledBoardTask_attributes = {
@@ -141,7 +159,8 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
+  MetaDataMutexHandle = osMutexNew(&MetaDataMutex_attributes);
+  SPIMutexHandle = osMutexNew(&SPIMutex_attributes);
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -154,6 +173,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_QUEUES */
   KeyQueueHandle = osMessageQueueNew (5, sizeof(uint16_t), &KeyQueue_attributes);
+  FlashCmdQueueHandle = osMessageQueueNew (10, sizeof(FlashCmdType_t), &FlashCmdQueue_attributes);
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
