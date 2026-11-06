@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../User/LED;../User/IIC;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../User/TASK;../User/OLED;../User/SPI;..\User\MPU6050;..\User\MPU6050\eMPL;..\User\NORFLASH</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../User/LED;../User/IIC;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../User/TASK;../User/OLED;../User/SPI;..\User\MPU6050;..\User\MPU6050\eMPL;..\User\NORFLASH;..\User\WS2812</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1399,6 +1399,16 @@
               <FileType>5</FileType>
               <FilePath>..\User\TASK\flash_task.h</FilePath>
             </File>
+            <File>
+              <FileName>ws2812_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\TASK\ws2812_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>ws2812_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\TASK\ws2812_task.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1498,6 +1508,21 @@
               <FileName>norflash.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\NORFLASH\norflash.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>WS2812</GroupName>
+          <Files>
+            <File>
+              <FileName>ws2812.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\WS2812\ws2812.c</FilePath>
+            </File>
+            <File>
+              <FileName>ws2812.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\WS2812\ws2812.h</FilePath>
             </File>
           </Files>
         </Group>

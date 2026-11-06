@@ -10,6 +10,7 @@ typedef enum
     WDG_TASK_OLED,
     WDG_TASK_MPU,
     WDG_TASK_FLASH,
+    WDG_TASK_WS2812,
     WDG_TASK_COUNT
 } WatchdogTaskId_t;
 

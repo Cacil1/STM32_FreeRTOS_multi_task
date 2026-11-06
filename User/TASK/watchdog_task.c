@@ -10,7 +10,7 @@
 static volatile uint32_t g_task_alive_tick[WDG_TASK_COUNT];
 
 static const char *g_task_name[WDG_TASK_COUNT] = {
-    "WDG_TASK_Key", "WDG_TASK_LED_BOARD", "WDG_TASK_OLED", "WDG_TASK_MPU", "WDG_TASK_FLASH"};
+    "WDG_TASK_Key", "WDG_TASK_LED_BOARD", "WDG_TASK_OLED", "WDG_TASK_MPU", "WDG_TASK_FLASH", "WDG_TASK_WS2812"};
 
 void Watchdog_Checkin(WatchdogTaskId_t id)
 {

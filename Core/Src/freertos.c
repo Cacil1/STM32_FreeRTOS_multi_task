@@ -32,6 +32,7 @@
 #include "oled_task.h"
 #include "mpu_task.h"
 #include "flash_task.h"
+#include "ws2812_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -125,6 +126,14 @@ const osThreadAttr_t flashTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+
+// WS2812显示任务
+osThreadId_t ws2812TaskHandle;
+const osThreadAttr_t ws2812Task_attributes = {
+  .name = "ws2812Task",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE END Variables */
 /* Definitions for initTask */
 osThreadId_t initTaskHandle;
@@ -142,6 +151,7 @@ void StartWatchDogTask(void *argument);
 void StartOLEDTask(void *argument);
 void StartMPUTask(void *argument);
 void StartFlashTask(void *argument);
+void StartWS2812Task(void *argument);
 /* USER CODE END FunctionPrototypes */
 
 void StartInitTask(void *argument);
@@ -187,6 +197,7 @@ void MX_FREERTOS_Init(void) {
   oledTaskHandle = osThreadNew(StartOLEDTask, NULL, &oledTask_attributes);
   mpuTaskHandle = osThreadNew(StartMPUTask, NULL, &mpuTask_attributes);
   flashTaskHandle = osThreadNew(StartFlashTask, NULL, &flashTask_attributes);
+  ws2812TaskHandle = osThreadNew(StartWS2812Task, NULL, &ws2812Task_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -240,6 +251,11 @@ void StartMPUTask(void *argument)
 void StartFlashTask(void *argument)
 {
   Flash_Task_Entry(argument);
+}
+
+void StartWS2812Task(void *argument)
+{
+  WS2812_Task_Entry(argument);
 }
 /* USER CODE END Application */
 
