@@ -8,23 +8,20 @@ typedef enum
     FLASH_CMD_WRITE_META = 0,
 } FlashCmdType_t;
 
-/* ---------------- flash 分区表（本文件私有，外部无需知晓） ---------------- */
+/* ---------------- flash 分区表 ---------------- */
 #define FLASH_SECTOR_SIZE 4096U
 
-#define META_SECTOR_A 0U   /* meta 版本链主力 */
-#define META_SECTOR_B 1U   /* meta GC 替补 */
-#define LOG_SECTOR_BASE 2U /* 预留：日志区起始，当前未使用 */
-#define LOG_SECTOR_COUNT 4U
+#define META_SECTOR_A 0U   /* meta存储A扇区 */
+#define META_SECTOR_B 1U   /* meta存储B扇区 */
 
-/* ---------------- TLV 记录头（8 字节，布局即协议） ---------------- */
+/* ---------------- TLV 记录头 ---------------- */
 #define TLV_MAGIC 0xAA55U
-#define TLV_PAYLOAD_MAX 96U /* 上限防御，meta 实际只用 5B */
+#define TLV_PAYLOAD_MAX 96U /* Meta数据最大值 */
 
 typedef struct __attribute__((packed))
 {
     uint16_t magic; /* TLV_MAGIC，身份识别 */
-    uint8_t crc;    /* 覆盖 len(1)+seq(4) 共 5 字节 + payload；
-                       len/seq 必须参与 —— len 坏则扫描迷路，seq 坏则认贼作父 */
+    uint8_t crc;    /* 覆盖 len(1)+seq(4) 共 5 字节 + payload */
     uint8_t len;    /* payload 长度，决定下一条记录的偏移 */
     uint32_t seq;   /* 逻辑时钟：单调递增，判新旧；GC 搬运不改写 */
 } TlvHdr_t;
@@ -49,7 +46,7 @@ typedef struct
 /* ---- Meta 访问接口） ---- */
 void Flash_MetaLock(void);
 void Flash_MetaUnlock(void);
-MetaData_t *Flash_MetaGet(void); /* 拿 RAM 正本指针，改完发 WRITE_META */
+MetaData_t *Flash_MetaGet(void);
 
 void Flash_Task_Entry(void *argument);
 

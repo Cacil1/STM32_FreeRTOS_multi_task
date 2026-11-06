@@ -7,29 +7,36 @@
 /* ============================================================================
  * 分区设计
  *   Meta 区：第 0、1 扇区（A/B 双扇区版本链 + GC 轮转）
- *   Log  区：第 2~5 扇区（当前未使用，预留）
  *
  * Meta 写入策略（追加式版本链）：
  *   写：每次保存 = active 扇区末尾追加一条新版本，不擦不动旧的
  *   读：扫到扇区末尾，取 seq 最大的有效记录
  *   GC：active 写满 → 最新 1 条搬去替补 → 擦旧主力 → 换角色
- *   擦除频率：一条记录 8+5=13B，4096/13 ≈ 315 个版本，约 315 次保存才擦 1 次
  * ==========================================================================*/
 
 extern osMutexId_t SPIMutexHandle;
 extern osMutexId_t MetaDataMutexHandle;
 extern osMessageQueueId_t FlashCmdQueueHandle;
 
-/* ---------------- RAM 正本 & 写入游标 ---------------- */
-static MetaData_t g_meta;
-static uint32_t g_meta_active = META_SECTOR_A;
-static uint16_t g_meta_write_off = 0U;
-static uint32_t g_meta_seq = 0U;
+static MetaData_t g_meta;                      // 全局的Meta数据，其他任务也是先修改这个全局变量，再发消息保存，本任务会保存快照到flash
+static uint32_t g_meta_active = META_SECTOR_A; // 当前活跃的时哪个扇区（设计了双扇区轮转）
+static uint16_t g_meta_write_off = 0U;         // 扇区内部的写指针
+static uint32_t g_meta_seq = 0U;               // 序号，标记新旧数据
 
-/* ---- 对外访问器：RAM 正本只有一个，谁改它都必须走这扇门 ---- */
-void Flash_MetaLock(void) { osMutexAcquire(MetaDataMutexHandle, osWaitForever); }
-void Flash_MetaUnlock(void) { osMutexRelease(MetaDataMutexHandle); }
-MetaData_t *Flash_MetaGet(void) { return &g_meta; }
+void Flash_MetaLock(void)
+{
+    osMutexAcquire(MetaDataMutexHandle, osWaitForever);
+}
+
+void Flash_MetaUnlock(void)
+{
+    osMutexRelease(MetaDataMutexHandle);
+}
+
+MetaData_t *Flash_MetaGet(void) 
+{ 
+    return &g_meta; 
+}
 
 /* ---------------- 工具 ---------------- */
 static uint32_t sec_addr(uint32_t sector)
@@ -50,13 +57,14 @@ static uint8_t crc8_calc(uint8_t seed, const uint8_t *p, uint32_t n)
     return c;
 }
 
-/* CRC 覆盖 len(1)+seq(4)+payload(len 字节) —— 头部参与计算（跳过 magic/crc 自身） */
+/* CRC 覆盖 len(1)+seq(4)+payload —— 头部参与计算（跳过 magic/crc 自身） */
 static uint8_t tlv_crc_of(const TlvHdr_t *h, const uint8_t *payload)
 {
-    uint8_t c = crc8_calc(0xFFU, (const uint8_t *)&h->len, 5U);  /* ← 补 0xFFU */
+    uint8_t c = crc8_calc(0xFFU, (const uint8_t *)&h->len, 5U); /* ← 补 0xFFU */
     return crc8_calc(c, payload, h->len);
 }
 
+/* 扫描当前扇区，并获取写指针等标志*/
 static void meta_scan_sector(uint32_t sector, meta_scan_t *info, MetaData_t *out_payload)
 {
     memset(info, 0, sizeof(*info));
@@ -90,6 +98,7 @@ static void meta_scan_sector(uint32_t sector, meta_scan_t *info, MetaData_t *out
     info->end_off = off;
 }
 
+/* 切换扇区，将最新记录搬移至另一个扇区，删除旧扇区的内容，并更新相关标志 */
 static void meta_gc_locked(void)
 {
     static TlvHdr_t h;
@@ -110,7 +119,7 @@ static void meta_gc_locked(void)
         {
             best_seq = h.seq;
             best_off = off;
-            best_len = h.len; /* 记录长度现场存下 */
+            best_len = h.len;
             found = 1;
         }
         off += (uint16_t)(sizeof(h) + h.len);
@@ -143,7 +152,7 @@ static void handle_write_meta(void)
     TlvHdr_t *h = (TlvHdr_t *)buf;
     MetaData_t *p = (MetaData_t *)(buf + sizeof(TlvHdr_t));
 
-    *p = g_meta; /* 单结构体方案：同类型赋值，编译器逐成员拷贝 */
+    *p = g_meta;
 
     h->magic = TLV_MAGIC;
     h->len = (uint8_t)sizeof(MetaData_t);
@@ -153,6 +162,8 @@ static void handle_write_meta(void)
     const uint16_t need = (uint16_t)(sizeof(TlvHdr_t) + h->len);
 
     osMutexAcquire(SPIMutexHandle, osWaitForever);
+
+    // 当前扇区可写区域不足，切换扇区
     if (g_meta_write_off + need > FLASH_SECTOR_SIZE)
     {
         meta_gc_locked();
@@ -163,6 +174,7 @@ static void handle_write_meta(void)
     osMutexRelease(SPIMutexHandle);
 }
 
+/* 遍历两个扇区，找到当前正在使用的扇区、写指针，并赋值给g_meta */
 static void init_meta(void)
 {
     meta_scan_t a, b;
@@ -180,7 +192,7 @@ static void init_meta(void)
     if (win->has_valid)
     {
         osMutexAcquire(MetaDataMutexHandle, osWaitForever);
-        *(&g_meta) = *pw; /* 结构体赋值，替代逐字段五连 */
+        *(&g_meta) = *pw;
         osMutexRelease(MetaDataMutexHandle);
         g_meta_seq = win->max_seq;
     }
