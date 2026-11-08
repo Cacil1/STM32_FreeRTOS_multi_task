@@ -23,7 +23,6 @@ void MPU_Task_Entry(void *argument)
     (void)argument;
 
     System_Init_WaitReady();
-
     for (;;)
     {
         // 看门狗喂狗

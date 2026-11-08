@@ -65,6 +65,6 @@ void OLED_Task_Entry(void *argument)
         }
 
         // �����в�Ҫʹ��HAL_Delay������һֱռ��CPU��osDelay���ͷ�CPU
-        osDelay(500);
+        osDelay(400);
     }
 }

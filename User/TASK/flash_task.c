@@ -2,6 +2,7 @@
 #include "watchdog_task.h"
 #include "system_init.h"
 #include "norflash.h"
+#include "usart.h"
 #include <string.h>
 
 /* ============================================================================

@@ -33,6 +33,7 @@
 #include "mpu_task.h"
 #include "flash_task.h"
 #include "ws2812_task.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -115,7 +116,7 @@ const osThreadAttr_t oledTask_attributes = {
 osThreadId_t mpuTaskHandle;
 const osThreadAttr_t mpuTask_attributes = {
   .name = "mpuTask",
-  .stack_size = 256 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -198,6 +199,14 @@ void MX_FREERTOS_Init(void) {
   mpuTaskHandle = osThreadNew(StartMPUTask, NULL, &mpuTask_attributes);
   flashTaskHandle = osThreadNew(StartFlashTask, NULL, &flashTask_attributes);
   ws2812TaskHandle = osThreadNew(StartWS2812Task, NULL, &ws2812Task_attributes);
+  
+  // 堆余量打印
+  printf("[RTOS] free heap after all creation = %u bytes\r\n", (unsigned)xPortGetFreeHeapSize());
+
+  // 任务句柄打印，判断任务是否创建成功
+  printf("[RTOS] handles: Key=%p OLED=%p MPU=%p Flash=%p WS2812=%p\r\n",
+         (void*)keyScanTaskHandle, (void*)oledTaskHandle, (void*)mpuTaskHandle,
+         (void*)flashTaskHandle, (void*)ws2812TaskHandle);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */

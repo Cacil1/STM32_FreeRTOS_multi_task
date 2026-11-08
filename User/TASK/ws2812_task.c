@@ -2,6 +2,7 @@
 #include "system_init.h"
 #include "watchdog_task.h"
 #include "ws2812.h"
+#include "usart.h"
 
 void WS2812_Task_Entry(void *argument)
 {
