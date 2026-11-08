@@ -3696,9 +3696,9 @@
       </Doc>
       <Doc>
         <Name>..\User\TASK\system_init.c</Name>
-        <ColumnNumber>25</ColumnNumber>
+        <ColumnNumber>23</ColumnNumber>
         <TopLine>1</TopLine>
-        <CurrentLine>16</CurrentLine>
+        <CurrentLine>17</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
@@ -3841,7 +3841,7 @@
       <Doc>
         <Name>..\User\MPU6050\mpu6050.h</Name>
         <ColumnNumber>0</ColumnNumber>
-        <TopLine>82</TopLine>
+        <TopLine>103</TopLine>
         <CurrentLine>1</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>

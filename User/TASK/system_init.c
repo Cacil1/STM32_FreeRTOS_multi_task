@@ -6,6 +6,7 @@
 #include "soft_spi.h"
 #include "watchdog_task.h"
 #include "norflash.h"
+#include "flash_task.h"
 
 void System_Init_WaitReady(void)
 {
@@ -29,6 +30,7 @@ void Init_Task_Entry(void *argument)
     OLED_Init();
 
 	norflash_init();
+	init_meta();
 
 	for(;;)
 	{

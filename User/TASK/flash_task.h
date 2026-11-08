@@ -32,6 +32,7 @@ typedef struct
     uint16_t end_off; /* 最后一条有效记录的末尾 = 下次追加位置 */
     uint32_t max_seq;
     uint8_t has_valid;
+    uint8_t tail_clean;
 } meta_scan_t;
 
 typedef struct
@@ -47,6 +48,7 @@ typedef struct
 void Flash_MetaLock(void);
 void Flash_MetaUnlock(void);
 MetaData_t *Flash_MetaGet(void);
+void init_meta(void);
 
 void Flash_Task_Entry(void *argument);
 

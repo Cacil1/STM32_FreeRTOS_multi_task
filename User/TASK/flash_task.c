@@ -34,9 +34,9 @@ void Flash_MetaUnlock(void)
     osMutexRelease(MetaDataMutexHandle);
 }
 
-MetaData_t *Flash_MetaGet(void) 
-{ 
-    return &g_meta; 
+MetaData_t *Flash_MetaGet(void)
+{
+    return &g_meta;
 }
 
 /* ---------------- 工具 ---------------- */
@@ -96,6 +96,9 @@ static void meta_scan_sector(uint32_t sector, meta_scan_t *info, MetaData_t *out
         }
         off += (uint16_t)(sizeof(h) + h.len);
     }
+    uint8_t t;
+    norflash_read(&t, sec_addr(sector) + off, 1);
+    info->tail_clean = (t == 0xFFU);
     info->end_off = off;
 }
 
@@ -115,6 +118,11 @@ static void meta_gc_locked(void)
         norflash_read((uint8_t *)&h, sec_addr(g_meta_active) + off, sizeof(h));
         if (h.magic != TLV_MAGIC)
             break;
+        if (h.len > TLV_PAYLOAD_MAX)
+            break;
+        if (h.len < sizeof(MetaData_t))
+            break;
+
         norflash_read(payload, sec_addr(g_meta_active) + off + sizeof(h), h.len);
         if (tlv_crc_of(&h, payload) == h.crc && h.seq > best_seq)
         {
@@ -127,6 +135,12 @@ static void meta_gc_locked(void)
     }
     if (!found)
     {
+        /* 没有任何有效记录：擦掉替补扇区，换过去，得到干净状态 */
+        const uint32_t backup =
+            (g_meta_active == META_SECTOR_A) ? META_SECTOR_B : META_SECTOR_A;
+        norflash_erase_sector(backup);
+        Watchdog_Checkin(WDG_TASK_FLASH);
+        g_meta_active = backup;
         g_meta_write_off = 0U;
         return;
     }
@@ -153,7 +167,16 @@ static void handle_write_meta(void)
     TlvHdr_t *h = (TlvHdr_t *)buf;
     MetaData_t *p = (MetaData_t *)(buf + sizeof(TlvHdr_t));
 
+    // 测试代码
+    g_meta.led_red_state = 1;
+    g_meta.last_ui_page = 2;
+    g_meta.ws2812_brightness = 3;
+    g_meta.ws2812_color = 4;
+    g_meta.ws2812_mode_power = 5;
+
+    osMutexAcquire(MetaDataMutexHandle, osWaitForever);
     *p = g_meta;
+    osMutexRelease(MetaDataMutexHandle);
 
     h->magic = TLV_MAGIC;
     h->len = (uint8_t)sizeof(MetaData_t);
@@ -176,7 +199,7 @@ static void handle_write_meta(void)
 }
 
 /* 遍历两个扇区，找到当前正在使用的扇区、写指针，并赋值给g_meta */
-static void init_meta(void)
+void init_meta(void)
 {
     meta_scan_t a, b;
     static MetaData_t pa, pb;
@@ -207,6 +230,21 @@ static void init_meta(void)
 
     g_meta_active = use_a ? META_SECTOR_A : META_SECTOR_B;
     g_meta_write_off = win->end_off;
+
+    if (!win->tail_clean)
+    {
+        LOG("[Flash] meta sector dirty, running GC on boot");
+        osMutexAcquire(SPIMutexHandle, osWaitForever);
+        meta_gc_locked(); /* 内部已含擦除，结束时必然干净 */
+        osMutexRelease(SPIMutexHandle);
+    }
+
+    // 打印当前g_meta
+    LOG("g_meta.led_red_state = %d", g_meta.led_red_state);
+    LOG("g_meta.last_ui_page = %d", g_meta.last_ui_page);
+    LOG("g_meta.ws2812_brightness = %d", g_meta.ws2812_brightness);
+    LOG("g_meta.ws2812_color = %d", g_meta.ws2812_color);
+    LOG("g_meta.ws2812_mode_power = %d", g_meta.ws2812_mode_power);
 }
 
 /* ---------------- 任务入口 ---------------- */
@@ -214,17 +252,17 @@ void Flash_Task_Entry(void *argument)
 {
     (void)argument;
     FlashCmdType_t type;
-    System_Init_WaitReady();
 
-    init_meta(); /* 上电加载：恢复 g_meta、seq、active 扇区和追加位置 */
+    System_Init_WaitReady();
 
     for (;;)
     {
-        /* 1000ms 超时到了就喂狗 */
+        Watchdog_Checkin(WDG_TASK_FLASH);
+
+        /* 1000ms 超时 */
         osStatus_t status = osMessageQueueGet(FlashCmdQueueHandle, &type, NULL, 1000U);
         if (status != osOK)
         {
-            Watchdog_Checkin(WDG_TASK_FLASH);
             continue;
         }
 
