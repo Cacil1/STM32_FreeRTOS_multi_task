@@ -1788,29 +1788,29 @@ int mpu_read_fifo_stream(unsigned short length, unsigned char *data,
     unsigned char tmp[2];
     unsigned short fifo_count;
     if (!st.chip_cfg.dmp_on)
-        return -1;
+        return 99;
     if (!st.chip_cfg.sensors)
-        return -1;
+        return 98;
 
     if (i2c_read(st.hw->addr, st.reg->fifo_count_h, 2, tmp))
-        return -1;
+        return 97;
     fifo_count = (tmp[0] << 8) | tmp[1];
     if (fifo_count < length) {
         more[0] = 0;
-        return -1;
+        return 96;
     }
     if (fifo_count > (st.hw->max_fifo >> 1)) {
         /* FIFO is 50% full, better check overflow bit. */
         if (i2c_read(st.hw->addr, st.reg->int_status, 1, tmp))
-            return -1;
+            return 95;
         if (tmp[0] & BIT_FIFO_OVERFLOW) {
             mpu_reset_fifo();
-            return -2;
+            return 94;
         }
     }
 
     if (i2c_read(st.hw->addr, st.reg->fifo_r_w, length, data))
-        return -1;
+        return 93;
     more[0] = fifo_count / length - 1;
     return 0;
 }
@@ -2993,7 +2993,12 @@ uint8_t mpu_dmp_get_data(float *pitch,float *roll,float *yaw)
 	short gyro[3], accel[3], sensors;
 	unsigned char more;
 	long quat[4]; 
-	if(dmp_read_fifo(gyro, accel, quat, &sensor_timestamp, &sensors,&more))return 1;	 
+    int ret = 0;
+	ret = dmp_read_fifo(gyro, accel, quat, &sensor_timestamp, &sensors,&more);
+    if(ret != 0)
+    {
+        return ret;
+    }
 	/* Gyro and accel data are written to the FIFO by the DMP in chip frame and hardware units.
 	 * This behavior is convenient because it keeps the gyro and accel outputs of dmp_read_fifo and mpu_read_fifo consistent.
 	**/
