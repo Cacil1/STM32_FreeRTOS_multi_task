@@ -7,42 +7,51 @@
 #include "watchdog_task.h"
 #include "norflash.h"
 #include "flash_task.h"
+#include "mpu6050.h"
 
 void System_Init_WaitReady(void)
 {
-    (void)osEventFlagsWait(SystemReadyFlagsHandle, SYSTEM_READY_FLAG,
-                            osFlagsWaitAny | osFlagsNoClear, osWaitForever);
+	(void)osEventFlagsWait(SystemReadyFlagsHandle, SYSTEM_READY_FLAG,
+						   osFlagsWaitAny | osFlagsNoClear, osWaitForever);
 }
 
 void System_Init_ReleaseTasks(void)
 {
-    (void)osEventFlagsSet(SystemReadyFlagsHandle, SYSTEM_READY_FLAG);
+	(void)osEventFlagsSet(SystemReadyFlagsHandle, SYSTEM_READY_FLAG);
 }
 
 void Init_Task_Entry(void *argument)
 {
-    (void)argument;
+	(void)argument;
 
-    SOFT_IIC_Init();
+	SOFT_IIC_Init();
 
 	soft_spi_init();
 
-    OLED_Init();
+	OLED_Init();
 
 	norflash_init();
 	init_meta();
 
-	for(;;)
+	while (MPU_Init() != 0)
 	{
-		osDelay(500);
-
-		// 初始化软件看门狗
-		Watchdog_ResetCheckins();
-
-		// 唤醒所有等待的任务
-		System_Init_ReleaseTasks();
-
-		// 任务退出
-		osThreadExit(); 
+		LOG("MPU_Init Retrying");
+		osDelay(200);
 	}
+
+	while (mpu_dmp_init() != 0)
+	{
+		LOG("mpu_dmp_init Retrying");
+		osDelay(200);
+	}
+
+	MX_IWDG_Init();
+	// 初始化软件看门狗
+	Watchdog_ResetCheckins();
+
+	// 唤醒所有等待的任务
+	System_Init_ReleaseTasks();
+
+	// 任务退出
+	osThreadExit();
 }
